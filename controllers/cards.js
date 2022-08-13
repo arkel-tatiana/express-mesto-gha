@@ -30,6 +30,7 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.likeCard = (req, res) => {
+  req.params.cardId.length < 24 ? res.status(400).send({ message: 'Переданы некорректные данные в методы поиска карточки.' }) : ''
   Card.findByIdAndUpdate( req.params.cardId,
   { $addToSet: { likes: req.user._id } },
   { new: true },)
@@ -41,6 +42,7 @@ module.exports.likeCard = (req, res) => {
 }
 
 module.exports.dislikeCard = (req, res) => {
+  req.params.cardId.length < 24 ? res.status(400).send({ message: 'Переданы некорректные данные в методы поиска карточки.' }) : ''
   Card.findByIdAndUpdate( req.params.cardId,
   { $pull: { likes: req.user._id } },
   { new: true },)
