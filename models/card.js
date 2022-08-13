@@ -1,15 +1,15 @@
 const mongoose = require('mongoose');
+
 const cardSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    required: [true, 'название карточки - это обязательное для заполнения поле'],
     minlength: 2,
     maxlength: 30,
   },
   link: {
     type: String,
-    required: true,
-    match: /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
+    required: [true, 'ссылка на карточку - это обязательное для заполнения поле'],
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
@@ -19,11 +19,11 @@ const cardSchema = new mongoose.Schema({
   likes: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
-    default : [],
+    default: [],
   }],
   createdAt: {
     type: Date,
-    default : Date.now,
-  }
+    default: Date.now,
+  },
 });
 module.exports = mongoose.model('card', cardSchema);

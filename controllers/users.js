@@ -1,62 +1,81 @@
 const User = require('../models/user');
+const { validationError, notFoundId, defaultError } = require('../error/errorStatus');
 
 const getUsers = (req, res) => {
   User.find({})
-    .then(users => res.send({ data: users }))
-    .catch(() => res.status(500).send({ message: 'Что-то пошло не так' }));
+    .then((users) => res.send({ data: users }))
+    .catch(() => res.status(defaultError.statusCode).send({ message: defaultError.message }));
 };
 
 const getUser = (req, res) => {
-  req.params.userId.length < 24 ? res.status(400).send({ message: 'Переданы некорректные данные в методы поиска пользователя.' }) : ''
   User.findById(req.params.userId)
     .then((user) => {
-      user ? res.status(200).send({ data: user }) : res.status(404).send({ message: 'Пользователь не найден.' })
+      if (user) {
+        res.status(200).send({ data: user });
+      } else {
+        res.status(notFoundId.statusCode).send({ message: notFoundId.message });
+      }
     })
-    .catch(() => res.status(500).send({ message: req.params.userId }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(validationError.statusCode).send({ message: validationError.message });
+      } else {
+        res.status(defaultError.statusCode).send({ message: defaultError.message });
+      }
+    });
 };
 
 const createUser = (req, res) => {
-  const { name, about, avatar} = req.body;
+  const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-    .then(user => res.send({ data: user }))
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-         res.status(400).send({ message: 'Переданы некорректные данные в методы создания пользователя.'})
+        res.status(validationError.statusCode).send({ message: validationError.message });
       } else {
-        res.status(500).send('Что-то пошло не так');
+        res.status(defaultError.statusCode).send({ message: defaultError.message });
       }
     });
 };
 
 const updateUser = (req, res) => {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, about }, {new: true, runValidators: true})
-      .then((user) => {
-      user ? res.status(200).send({ data: user }) : res.status(404).send({ message: 'Пользователь не найден.' })
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
+    .then((user) => {
+      if (user) {
+        res.status(200).send({ data: user });
+      } else {
+        res.status(notFoundId.statusCode).send({ message: notFoundId.message });
+      }
     })
-    .then(user => res.send({ data: user }))
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-         res.status(400).send({ message: 'Переданы некорректные данные в методы обновления профиля пользователя.'})
+        res.status(validationError.statusCode).send({ message: validationError.message });
       } else {
-        res.status(500).send('Что-то пошло не так');
+        res.status(defaultError.statusCode).send({ message: defaultError.message });
       }
     });
-}
+};
 
 const updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar }, {new: true, runValidators: true})
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => {
-      user ? res.status(200).send({ data: user }) : res.status(404).send({ message: 'Пользователь не найден.' })
+      if (user) {
+        res.status(200).send({ data: user });
+      } else {
+        res.status(notFoundId.statusCode).send({ message: notFoundId.message });
+      }
     })
-//    .then(user => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-         res.status(400).send({ message: 'Переданы некорректные данные в методы обновления аватара пользователя.'})
+        res.status(validationError.statusCode).send({ message: validationError.message });
       } else {
-        res.status(500).send('Что-то пошло не так');
+        res.status(defaultError.statusCode).send({ message: defaultError.message });
       }
     });
-}
-module.exports = { getUsers, getUser, createUser, updateUser, updateUserAvatar }
+};
+module.exports = {
+  getUsers, getUser, createUser, updateUser, updateUserAvatar,
+};
