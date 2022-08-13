@@ -7,11 +7,12 @@ const getUsers = (req, res) => {
 };
 
 const getUser = (req, res) => {
+  req.params.userId.length < 24 ? res.status(400).send({ message: 'Переданы некорректные данные в методы поиска пользователя.' }) : ''
   User.findById(req.params.userId)
     .then((user) => {
       user ? res.status(200).send({ data: user }) : res.status(404).send({ message: 'Пользователь не найден.' })
     })
-    .catch(() => res.status(500).send({ message: 'Что-то пошло не так' }));
+    .catch(() => res.status(500).send({ message: req.params.userId }));
 };
 
 const createUser = (req, res) => {
@@ -29,7 +30,7 @@ const createUser = (req, res) => {
 
 const updateUser = (req, res) => {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, about })
+  User.findByIdAndUpdate(req.user._id, { name, about }, {runValidators: true} )
     .then((user) => {
       user ? res.status(200).send({ data: user }) : res.status(404).send({ message: 'Пользователь не найден.' })
     })
@@ -45,7 +46,7 @@ const updateUser = (req, res) => {
 
 const updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar })
+  User.findByIdAndUpdate(req.user._id, { avatar }, {runValidators: true})
     .then((user) => {
       user ? res.status(200).send({ data: user }) : res.status(404).send({ message: 'Пользователь не найден.' })
     })

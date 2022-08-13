@@ -7,6 +7,7 @@ module.exports.getCards = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
+  req.params.cardId.length < 24 ? res.status(400).send({ message: 'Переданы некорректные данные в методы поиска карточки.' }) : ''
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       card ? res.status(200).send({ data: card }) : res.status(404).send({ message: 'Карточка не найдена.' })
