@@ -16,13 +16,13 @@ module.exports.deleteCard = (req, res, next) => {
       if (!card) {
         throw new NotFoundError('Карточка не найдена');
       }
-      Card.findOneAndRemove({ _id: req.params.cardId, owner: req.user._id })
+      const cardOwner = card.owner.toString().replace('new ObjectId("', '');
+      if (cardOwner !== req.user._id) {
+        throw new DeleteError('Вы не можите удалить карточку другого пользователя');
+      }
+      Card.findByIdAndRemove(req.params.cardId)
         .then((cardDelete) => {
-          if (cardDelete) {
-            res.status(200).send({ data: cardDelete });
-          } else {
-            throw new DeleteError('Вы не можите удалить карточку другого пользователя');
-          }
+          res.status(200).send({ data: cardDelete });
         });
     })
     .catch((err) => {

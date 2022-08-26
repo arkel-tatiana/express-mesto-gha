@@ -67,17 +67,25 @@ const createUser = (req, res, next) => {
       email: req.body.email,
       password: hash,
     }))
+    .then((user) => res.send({
+      name: user.name,
+      about: user.abour,
+      avatar: user.avatar,
+      email: user.email,
+      _id: user._id,
+    }))
     .catch((err) => {
+      if (err.name === 'CastError') {
+        return next(new CastError('Переданы некорректные данные для запроса'));
+      }
       if (err.name === 'ValidationError') {
         if (err.message.includes('unique')) {
-          throw new UniqueError(err.message.replace('user validation failed:', 'ошибка при создании пользователя:  '));
-        } else {
-          throw new ValidationError(err.message.replace('user validation failed:', 'ошибка при создании пользователя:  '));
+          return next(new UniqueError(err.message.replace('user validation failed:', 'ошибка при создании пользователя:  ')));
         }
+        return next(new ValidationError(err.message.replace('user validation failed:', 'ошибка при создании пользователя:  ')));
       }
-    })
-    .then((user) => res.send({ data: user }))
-    .catch((err) => next(err));
+      return next(err);
+    });
 };
 
 const updateUser = (req, res, next) => {
