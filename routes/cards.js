@@ -9,12 +9,23 @@ router.get('/', auth, getCards);
 router.post('/', auth, celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
-    link: Joi.string().required(),
-    // .math(/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/ig),
+    link: Joi.string().required().pattern(/(^(https|http):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/i),
   }),
 }), createCard);
-router.delete('/:cardId', auth, deleteCard);
-router.put('/:cardId/likes', auth, likeCard);
-router.delete('/:cardId/likes', auth, dislikeCard);
+router.delete('/:cardId', auth, celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().alphanum().length(24),
+  }),
+}), deleteCard);
+router.put('/:cardId/likes', auth, celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().alphanum().length(24),
+  }),
+}), likeCard);
+router.delete('/:cardId/likes', auth, celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().alphanum().length(24),
+  }),
+}), dislikeCard);
 
 module.exports = router;

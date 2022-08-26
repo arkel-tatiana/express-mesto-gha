@@ -14,8 +14,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
-    email: Joi.string().required(),
-    // .validate([validator.isEmail, 'не правильно введен email']),
+    email: Joi.string().required().email(),
     password: Joi.string().required(),
   }),
 }), login);
@@ -24,7 +23,7 @@ app.post('/signup', celebrate({
     name: Joi.string().min(2).max(30).default('Жак-Ив Кусто'),
     about: Joi.string().min(2).max(30).default('Исследователь'),
     avatar: Joi.string().pattern(/(^(https|http):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/i),
-    email: Joi.string().required(),
+    email: Joi.string().required().email(),
     password: Joi.string().required(),
   }),
 }), createUser);
