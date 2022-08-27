@@ -2,7 +2,7 @@ const Card = require('../models/card');
 const NotFoundError = require('../error/NotFoundError');
 const DeleteError = require('../error/DeleteError');
 const ValidationError = require('../error/ValidationError');
-const CastError = require('../error/CastError');
+// const CastError = require('../error/CastError');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
@@ -16,21 +16,18 @@ module.exports.deleteCard = (req, res, next) => {
       if (!card) {
         throw new NotFoundError('Карточка не найдена');
       }
-      const cardOwner = card.owner.toString().replace('new ObjectId("', '');
+      const cardOwner = card.owner.toString();
       if (cardOwner !== req.user._id) {
         throw new DeleteError('Вы не можите удалить карточку другого пользователя');
       }
-      Card.findByIdAndRemove(req.params.cardId)
+      return Card.findByIdAndRemove(req.params.cardId)
         .then((cardDelete) => {
           res.status(200).send({ data: cardDelete });
         });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new CastError('Переданы некорректные данные для запроса'));
-      }
-      if (err.name === 'ValidationError') {
-        return next(new ValidationError(err.message));
+        return next(new ValidationError('Переданы некорректные данные для запроса'));
       }
       return next(err);
     });
@@ -41,9 +38,6 @@ module.exports.createCard = (req, res, next) => {
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new CastError('Переданы некорректные данные для запроса'));
-      }
       if (err.name === 'ValidationError') {
         return next(new ValidationError(err.message));
       }
@@ -66,10 +60,7 @@ module.exports.likeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new CastError('Переданы некорректные данные для запроса'));
-      }
-      if (err.name === 'ValidationError') {
-        return next(new ValidationError(err.message));
+        return next(new ValidationError('Переданы некорректные данные для запроса'));
       }
       return next(err);
     });
@@ -90,10 +81,7 @@ module.exports.dislikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new CastError('Переданы некорректные данные для запроса'));
-      }
-      if (err.name === 'ValidationError') {
-        return next(new ValidationError(err.message));
+        return next(new ValidationError('Переданы некорректные данные для запроса'));
       }
       return next(err);
     });

@@ -2,7 +2,6 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const ValidationError = require('../error/ValidationError');
-const CastError = require('../error/CastError');
 const NotFoundError = require('../error/NotFoundError');
 const UniqueError = require('../error/UniqueError');
 
@@ -30,7 +29,7 @@ const getUserCurrent = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (user) {
-        res.status(200).send({ data: user });
+        res.send({ data: user });
       } else {
         throw new NotFoundError('Пользователь не найден');
       }
@@ -49,10 +48,7 @@ const getUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new CastError('Переданы некорректные данные для запроса'));
-      }
-      if (err.name === 'ValidationError') {
-        return next(new ValidationError(err.message));
+        return next(new ValidationError('Переданы некорректные данные для запроса'));
       }
       return next(err);
     });
@@ -75,9 +71,6 @@ const createUser = (req, res, next) => {
       _id: user._id,
     }))
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new CastError('Переданы некорректные данные для запроса'));
-      }
       if (err.name === 'ValidationError') {
         if (err.message.includes('unique')) {
           return next(new UniqueError(err.message.replace('user validation failed:', 'ошибка при создании пользователя:  ')));
@@ -99,9 +92,6 @@ const updateUser = (req, res, next) => {
       }
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new CastError('Переданы некорректные данные для запроса'));
-      }
       if (err.name === 'ValidationError') {
         return next(new ValidationError(err.message));
       }
@@ -120,9 +110,6 @@ const updateUserAvatar = (req, res, next) => {
       }
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new CastError('Переданы некорректные данные для запроса'));
-      }
       if (err.name === 'ValidationError') {
         return next(new ValidationError(err.message));
       }
