@@ -13,7 +13,7 @@ const NotFoundError = require('./error/NotFoundError');
 const options = {
   origin: [
     'http://localhost:3011',
-    'https://arkel.students.nomoredomains.sbs:',
+    'https://arkel.students.nomoredomains.sbs',
     'https://https://github.com/arkel-tatiana/express-mesto-gha.git',
   ],
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
