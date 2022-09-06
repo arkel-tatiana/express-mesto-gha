@@ -1,18 +1,36 @@
 const express = require('express');
+require('dotenv').config();
 const mongoose = require('mongoose');
 const { celebrate, Joi, errors } = require('celebrate');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 const { login, createUser } = require('./controllers/users');
 const { auth } = require('./middlewares/auth');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 const NotFoundError = require('./error/NotFoundError');
 
+const options = {
+  origin: [
+    'http://localhost:3011',
+    'https://arkel.students.nomoredomains.sbs:',
+    'https://https://github.com/arkel-tatiana/express-mesto-gha.git',
+  ],
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+  allowedHeaders: ['Content-Type', 'origin', 'Authorization'],
+  credentials: true,
+};
+
 const app = express();
+app.use('*', cors(options));
 const { PORT = 3000 } = process.env;
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 mongoose.connect('mongodb://localhost:27017/mestodb');
+app.use(requestLogger);
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -37,6 +55,7 @@ app.use('*', auth, () => {
   throw new NotFoundError('Запрашиваемый ресурс не найден');
 });
 
+app.use(errorLogger);
 app.use(errors());
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
