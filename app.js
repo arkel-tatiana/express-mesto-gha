@@ -10,21 +10,22 @@ const { auth } = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const NotFoundError = require('./error/NotFoundError');
 
-const options = {
-  origin: [
-    'http://localhost:3011',
-    'https://arkel.students.nomoredomains.sbs',
-    'https://https://github.com/arkel-tatiana/express-mesto-gha.git',
-  ],
-  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-  preflightContinue: false,
-  optionsSuccessStatus: 204,
-  allowedHeaders: ['Content-Type', 'origin', 'Authorization'],
-  credentials: true,
-};
+// const options = {
+//  origin: [
+//    'http://localhost:3011',
+//    'https://arkel.students.nomoredomains.sbs',
+//    'https://https://github.com/arkel-tatiana/express-mesto-gha.git',
+//  ],
+//  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+//  preflightContinue: false,
+//  optionsSuccessStatus: 204,
+//  allowedHeaders: ['Content-Type', 'origin', 'Authorization'],
+//  credentials: true,
+// };
 
 const app = express();
-app.use('*', cors(options));
+app.use(cors());
+// app.use('*', cors(options));
 const { PORT = 3000 } = process.env;
 app.use(cookieParser());
 app.use(bodyParser.json());
