@@ -12,7 +12,7 @@ const NotFoundError = require('./error/NotFoundError');
 
 const options = {
   origin: [
-    'http://localhost:3011',
+    'http://localhost:3010',
     'https://arkel.students.nomoredomains.sbs',
     'https://https://github.com/arkel-tatiana/express-mesto-gha.git',
   ],
@@ -24,7 +24,6 @@ const options = {
 };
 
 const app = express();
-// app.use(cors());
 app.use('*', cors(options));
 const { PORT = 3000 } = process.env;
 app.use(cookieParser());
